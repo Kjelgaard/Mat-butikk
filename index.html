@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matbutikk AS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation-flex.min.css">
+    <link rel="stylesheet" href="Matbutikk%20-css.css">
+
+</head>
+<body>
+
+
+    <script src="https://www.gstatic.com/firebasejs/4.12.0/firebase.js"></script>
+    <script>
+     // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyD4TnAzMmhqfCIQzjGThrmhZkQfm96936k",
+            authDomain: "matbutikk-9403f.firebaseapp.com",
+            databaseURL: "https://matbutikk-9403f.firebaseio.com",
+            projectId: "matbutikk-9403f",
+            storageBucket: "matbutikk-9403f.appspot.com",
+            messagingSenderId: "406817354461"
+        };
+        firebase.initializeApp(config);
+    </script>
+
+
+    <header>
+        <nav>
+            <button class="button warning" onclick="visAlleVarer()">Alle varer</button>
+            <button class="button success" onclick="visFrukt()">Frukt</button>
+            <button class="button" onclick="visDrikke()">Drikke</button>
+            <button class="button warning" onclick="visKurv()">Handlekurv</button>
+            <button class="button warning" onclick="tomKurv()">Tøm handlekurv</button>
+        </nav>
+    </header>
+
+<sidebar id="txtHandlekurv"></sidebar>
+<main id="varene"></main>
+
+<script>
+
+    // Henter inn databasen
+    var db = firebase.database();
+    var varer = db.ref("butikken/varer");
+    var handlekurv = db.ref("butikken/handlekurv");
+
+    // Henter inn HTML-objektene
+    var main = document.getElementById("varene");
+    var txtHandlekurv = document.getElementById("txtHandlekurv");
+
+    // Sletter alle varene som er i handlekurven
+    function tomKurv() {
+        console.log("Tømmer kurven");
+    // Fjerner objektene i handlekurven
+        handlekurv.remove();
+
+        // Fjerner all HTML dataen som ligger i handlekurven
+        txtHandlekurv.innerHTML = "<h1>Handlekurv</h1>";
+    }
+
+    // Viser alle varene som har blitt lagt til i handlekurven
+    function visKurv() {
+        console.log("Viser kurven");
+        // Om kurven har display "block" så setter vi det til none og vise verse.
+        if(txtHandlekurv.style.display === "block") {
+            txtHandlekurv.style.display = "none";
+        } else {
+            txtHandlekurv.style.display = "block";
+        }
+    }
+
+    // Oppdaterer selve handlekurven
+    function oppdaterHandleKurv(snapshot){
+        var vareNoekkel = snapshot.val().vare;
+
+        // Henter varen ved hjelp av vareNoekkel fra firebase databasen
+        var varenDB = db.ref("butikken/varer/" + vareNoekkel);
+        console.log("Legger til: ", "butikken/varer/" + vareNoekkel);
+
+        // Lager en lokal lytterfunkson for en vare slik at vi slipper å lagre hele databasen lokalt
+        varenDB.on("value", function(vareSnapshot){
+            var vare = vareSnapshot.val();
+            txtHandlekurv.innerHTML += `<article><b> ${vare.navn} <i>${vare.pris} kr</i></b></article>`;
+        });
+    }
+
+    // Lytterfunksjonen blir registrert når man velger en vare
+    handlekurv.on("child_added", oppdaterHandleKurv);
+
+    // Får en vare som et snapshot som vises på siden.
+    function visVare(snapshot) {
+        var vare = snapshot.val();
+        var vareNokkel = snapshot.key;
+    // Varene vises på siden med bilde, navn, pris, sted og innhold.
+    // Legger varen i handlekurven når man trykker på Legg i handlekurv ved hjelp av button og vareNokkel
+        main.innerHTML += `
+                <article>
+                    <img src="bilder/${vare.bilde}">
+                    <h1> ${vare.navn} <i>${vare.pris} kr</i></h1>
+                    <p>${vare.sted}</p><p>${vare.innhold}</p>
+                    <button class="button" onclick="leggVareIHandlekurv('${vareNokkel}')">Legg i Handlekurv</button>
+                </article>
+            `;
+    }
+
+    // Legger en vare til i handlekurven
+    function leggVareIHandlekurv(vareNoekkel){
+        handlekurv.push(
+            {
+                "vare": vareNoekkel,
+                "antall": 1
+            }
+        );
+    }
+
+    // Viser både fruktene og drikkene når Alle varer velges
+    function visAlleVarer() {
+        main.innerHTML = "";
+        varer.on("child_added", visVare);
+    }
+
+    // Viser bare drikkene når Drikke velges
+    function visDrikke() {
+        main.innerHTML = "";
+        varer
+            .orderByChild("type")
+            .equalTo("drikke")
+            .on("child_added", visVare);
+    }
+
+    // Viser bare frukten når Frukt velges
+    function visFrukt() {
+        main.innerHTML = "";
+        varer
+            .orderByChild("type")
+            .equalTo("frukt")
+            .on("child_added", visVare);
+    }
+
+    // Dette viser alle varene når siden lastes inn første gang
+    visAlleVarer()
+
+</script>
+<footer>
+
+    <h1>Vennligst send inn en anmeldelse av butikken min!</h1>
+    <form action="Anmeldelser.html">
+    <form id="skjema">
+        <input type="text" id="inpAvsender" required placeholder="Hva heter du?">
+        <input type="text" id="inpMening" required placeholder="Skriv hva du synes om nettsiden">
+        <button type="submit" class="button">Send</button>
+    </form>
+    </form>
+    <article id="txtMeldinger"></article>
+
+    <script>
+        let database=firebase.database();
+        let meldinger=database.ref("meldinger");
+        let skjema=document.getElementById("skjema");
+        let inpAvsender=document.getElementById("inpAvsender");
+        let inpMening=document.getElementById("inpMening");
+        let txtMeldinger=document.getElementById("txtMeldinger")
+        function visMelding(Snapshot) {
+            let melding=snapshot.val();
+            let meldingtekst=`<p><b>${melding.avsender}:</b><i>${melding.tekst}</i></p>`;
+            tctMeldinger.innerHTML=txtMeldinger.innerHTML+meldingTekst;
+        }
+        function regNyMelding(evt) {
+            evt.preventDefault();
+            var nyMelding={
+                avsender:inpAvsender.value,
+                tekst:inpMening.value
+            };
+            meldinger.push(nyMelding);
+            inpMening.value="";
+        }
+        meldinger.on("child_added", visMelding);
+        skjema.onsubmit=regNyMelding;
+    </script>
+</footer>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+{
+  "butikken": {
+    "varer": {
+        "frukt1": {
+          "navn": "Vannmelon",
+          "sted": "Afrika",
+          "pris": 15,
+          "bilde": "vannmelon.jpg",
+          "type": "frukt",
+          "innhold":"Rik på: Vann"
+        },
+        "frukt2": {
+          "navn": "Banan",
+          "sted": "Særøst-Asia",
+          "pris": 5,
+          "bilde": "banan.jpg",
+          "type": "frukt",
+          "innhold":"Rik på: Carbs "
+        },
+        "frukt3": {
+          "navn": "Eple",
+          "sted": "Norge",
+          "pris": 6,
+          "bilde": "eple.jpg",
+          "type": "frukt",
+          "innhold":"Rik på: Syre"
+        },
+        "frukt4": {
+          "navn": "Appelsin",
+          "sted": "Kina",
+          "pris": 7,
+          "bilde": "appelsin.jpg",
+          "type": "frukt",
+          "innhold":"Rik på: C-vitamin"
+        },
+        "drikke1": {
+          "navn": "Cola",
+          "sted": "USA",
+          "pris": 25,
+          "bilde": "coca cola.jpg",
+          "type": "drikke",
+          "innhold":"Rik på: Sukker"
+        },
+        "drikke2": {
+          "navn": "Vann",
+          "sted": "Fiiji ",
+          "pris": 20,
+          "bilde": "vann.jpg",
+          "type": "drikke",
+          "innhold":"Rik på: Vann"
+        },
+        "drikke3": {
+          "navn": "Iste",
+          "sted": "Norge",
+          "pris": 24,
+          "bilde": "iste.jpg",
+          "type": "drikke",
+          "innhold":"Rik på: Te"
+        },
+        "drikke4": {
+          "navn": "Red Bull",
+          "sted": "Østerrike",
+          "pris": 30,
+          "bilde": "red bull.jpg",
+          "type": "drikke",
+          "innhold":"Rik på: Energi"
+        }
+
+
+    }
+  }
+}
